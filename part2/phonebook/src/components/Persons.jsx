@@ -1,19 +1,30 @@
 /* eslint-disable react/prop-types */
 
-const Persons = ({list,filter}) => {
+const Persons = ({ list, filterFn, handleDelete }) => {
   return (
     <div>
       {list
         .filter((item) =>
-          item.name.toLowerCase().includes(filter.toLowerCase())
+          item.name.toLowerCase().includes(filterFn.toLowerCase())
         )
         .map((item, index) => (
-          <p key={index}>
-            {item.name} {item.number}
-          </p>
+          <div key={index}>
+            <p>
+              {item.name} {item.number}
+            </p>
+            <button
+              onClick={() => {
+                if (window.confirm(`Delete ${item.name} ?`)) {
+                  handleDelete(item.id);
+                }
+              }}
+            >
+              Delete
+            </button>
+          </div>
         ))}
     </div>
   );
-}
+};
 
-export default Persons ;
+export default Persons;
