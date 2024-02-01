@@ -15,7 +15,7 @@ const Persons = ({ list, filterFn, handleDelete }) => {
             <button
               onClick={() => {
                 if (window.confirm(`Delete ${item.name} ?`)) {
-                  handleDelete(item.id);
+                  handleDelete(item.id,item.name);
                 }
               }}
             >

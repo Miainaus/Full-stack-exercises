@@ -3,9 +3,11 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import personService from "./services/persons";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
+  const [successMessage, setSuccessMessage] = useState(null);
   useEffect(() => {
     personService
       .getAll()
@@ -24,10 +26,12 @@ const App = () => {
   const handleNumber = (event) => {
     setNewNumber(event.target.value);
   };
-  const handleDelete = (id) => {
-    personService
-      .remove(id)
-      .then(() => setPersons(persons.filter((person) => person.id !== id)));
+  const handleDelete = (id, name) => {
+    personService.remove(id).then(() => {
+      setPersons(persons.filter((person) => person.id !== id));
+      setSuccessMessage(`${name} was already removed from server`);
+      setTimeout(() => setSuccessMessage(null), 2000);
+    });
   };
   const addName = (event) => {
     event.preventDefault();
@@ -41,24 +45,42 @@ const App = () => {
         personService
           .update(repeatPerson.id, { name: newName, number: newNumber })
           .then((updatedPerson) => {
-            setPersons(persons.map(person=>person.id !==repeatPerson.id ? person : updatedPerson))
-          }
-          );
+            setSuccessMessage(`Updated ${updatedPerson.name}`);
+            setTimeout(() => setSuccessMessage(null), 2000);
+            setPersons(
+              persons.map((person) =>
+                person.id !== repeatPerson.id ? person : updatedPerson
+              )
+            );
+          })
+          .catch((error) => {
+            console.log(error);
+            setSuccessMessage(
+              `${repeatPerson.name} was already deleted from server`
+            );
+            setTimeout(() => setSuccessMessage(null), 2000);
+            setPersons(
+              persons.filter((person) => person.id !== repeatPerson.id)
+            );
+          });
       }
     } else {
       personService
         .create({ name: newName, number: newNumber })
         .then((returnedPersons) => {
+          setSuccessMessage(`Added ${returnedPersons.name}`);
+          setTimeout(() => setSuccessMessage(null), 2000);
           setPersons(persons.concat(returnedPersons));
-          setNewName("");
-          setNewNumber("");
         });
     }
+    setNewName("");
+    setNewNumber("");
   };
 
   return (
     <div>
-      <h2>Phone book</h2>
+      <h1>Phone book</h1>
+      <Notification message={successMessage} />
       <Filter filter={filter} onChange={handleFilter} />
       <h2>Add a new</h2>
       <PersonForm
