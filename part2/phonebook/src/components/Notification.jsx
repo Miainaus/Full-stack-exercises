@@ -1,14 +1,20 @@
 /* eslint-disable react/prop-types */
 
 
-const Notification = ({ message }) => {
-  if (message === null) {
+const Notification = ({ successMessage,errorMessage }) => {
+  if (successMessage === null && errorMessage === null) {
     return null
   }
   return (
-    <div className="message">
-      {message}
-    </div>
+    <div>
+      {successMessage && <div className="successMessage">
+        {successMessage}
+      </div>}
+     { errorMessage&&<div className="errorMessage">
+        {errorMessage}
+      </div>}
+         </div>
+
   );
 }
 

@@ -8,6 +8,7 @@ import Notification from "./components/Notification";
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
   useEffect(() => {
     personService
       .getAll()
@@ -31,6 +32,13 @@ const App = () => {
       setPersons(persons.filter((person) => person.id !== id));
       setSuccessMessage(`${name} was already removed from server`);
       setTimeout(() => setSuccessMessage(null), 2000);
+    }) .catch((error) => {
+      console.log(error);
+      setErrorMessage(
+        `Information of ${name} has already been deleted from server`
+      );
+      setTimeout(() => setSuccessMessage(null), 2000);
+      setPersons(persons.filter((person) => person.id !== id));
     });
   };
   const addName = (event) => {
@@ -53,16 +61,7 @@ const App = () => {
               )
             );
           })
-          .catch((error) => {
-            console.log(error);
-            setSuccessMessage(
-              `${repeatPerson.name} was already deleted from server`
-            );
-            setTimeout(() => setSuccessMessage(null), 2000);
-            setPersons(
-              persons.filter((person) => person.id !== repeatPerson.id)
-            );
-          });
+         ;
       }
     } else {
       personService
@@ -80,7 +79,7 @@ const App = () => {
   return (
     <div>
       <h1>Phone book</h1>
-      <Notification message={successMessage} />
+      <Notification successMessage={successMessage} errorMessage={errorMessage} />
       <Filter filter={filter} onChange={handleFilter} />
       <h2>Add a new</h2>
       <PersonForm
